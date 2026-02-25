@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta | SKYBLUE Airlines</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0081ff;
+            --dark-blue: #0056b3;
+            --sky-gradient: linear-gradient(135deg, #0081ff 0%, #e9f2ff 100%);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--sky-gradient);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .contenedor-login {
+            display: flex;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            width: 850px;
+            max-width: 95%;
+            min-height: 550px;
+        }
+
+        .columna-formulario {
+            flex: 1;
+            padding: 45px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .contenedor-logo {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .texto-logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-blue);
+            letter-spacing: 2px;
+        }
+
+        h2 {    
+            font-size: 26px;
+            color: #333;
+            margin-bottom: 25px;
+            margin-top: 0;
+            font-weight: 600;
+        }
+
+        .campo-entrada {
+            margin-bottom: 20px;
+        }
+
+        .campo-entrada label {
+            display: block;
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .campo-entrada input {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid #eee;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        .campo-entrada input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .boton-login {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-blue);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .boton-login:hover {
+            background-color: var(--dark-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 129, 255, 0.3);
+        }
+
+        .enlace-registro {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .enlace-registro a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .columna-imagen {
+            flex: 1.2;
+            /* Imagen diferente para registro */
+            background-image: url('https://images.unsplash.com/photo-1542296332-2e44a99cfef9?auto=format&fit=crop&w=800&q=80'); 
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .columna-imagen::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 86, 179, 0.3); 
+            z-index: 1;
+        }
+
+        .frase-bienvenida {
+            z-index: 2;
+            text-align: center;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .frase-bienvenida h1 {
+            font-size: 36px;
+            margin: 0;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .frase-bienvenida p {
+            font-size: 18px;
+            opacity: 0.9;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+
+<div class="contenedor-login">
+    <div class="columna-formulario">
+        <div class="contenedor-logo">
+            <div class="texto-logo">SKYBLUE</div>
+        </div>
+
+        <h2>Únete a nosotros</h2>
+        <form id="formulario-registro">
+            <div class="campo-entrada">
+                <label for="nombre">NOMBRE COMPLETO</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Tu nombre completo" required>
+            </div>
+            <div class="campo-entrada">
+                <label for="correo">CORREO ELECTRÓNICO</label>
+                <input type="email" id="correo" name="correo" placeholder="ejemplo@correo.com" required>
+            </div>
+            <div class="campo-entrada">
+                <label for="contrasena">CONTRASEÑA</label>
+                <input type="password" id="contrasena" name="contrasena" placeholder="Mínimo 6 caracteres" required>
+            </div>
+            
+            <button type="submit" class="boton-login">CREAR CUENTA</button>
+
+            <div class="enlace-registro">
+                ¿Ya tienes cuenta? <a href="login.html">Inicia Sesión</a>
+            </div>
+        </form>
+    </div>
+    
+    <div class="columna-imagen">
+        <div class="frase-bienvenida">
+            <h1>VIAJA EN GRANDE</h1>
+            <p>Comienza tu aventura hoy.</p>
+        </div>
+    </div>
+</div>
+
+
+<script type="module">
+    import { auth } from './firebase-config.js';
+    import { createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const formulario = document.getElementById('formulario-registro');
+
+    formulario.addEventListener('submit', async function(evento) {
+        evento.preventDefault();
+        const nombre = document.getElementById('nombre').value;
+        const correo = document.getElementById('correo').value;
+        const contrasena = document.getElementById('contrasena').value;
+
+        try {
+                const userCredential = await createUserWithEmailAndPassword(auth, correo, contrasena);
+            
+            await updateProfile(userCredential.user, {
+                displayName: nombre
+            });
+            
+            localStorage.setItem('userName', nombre);
+            
+            alert('¡Cuenta creada con éxito! Bienvenido a SKYBLUE, ' + nombre + '.');
+            window.location.href = 'index.html';
+        } catch (error) {
+            console.error(error);
+            let mensaje = 'Error: ' + error.message;
+            
+            if (error.code === 'auth/email-already-in-use') mensaje = 'Este correo ya está registrado.';
+            if (error.code === 'auth/weak-password') mensaje = 'La contraseña debe tener al menos 6 caracteres.';
+            
+            alert(mensaje);
+        }
+    });
+</script>
+
+</body>
+</html>

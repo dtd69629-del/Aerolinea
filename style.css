@@ -1,0 +1,51 @@
+:root {
+    --primary: #0081ff;
+    --primary-dark: #005bb7;
+    --bg-light: #f4f7f6;
+    --white: #ffffff;
+    --text-dark: #333;
+    --text-gray: #666;
+    --available: #2ecc71;
+    --occupied: #dfe6e9;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+body { background-color: var(--bg-light); color: var(--text-dark); }
+
+/* Header Compartido */
+header {
+    background: var(--primary);
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.logo { font-size: 1.5rem; font-weight: bold; letter-spacing: 2px; text-decoration: none; color: white; }
+
+/* Botones */
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-primary:hover { background: var(--primary-dark); }
+
+/* Contenedores de tarjetas */
+.card {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKYBLUE - Buscar Vuelos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #00a8e8;
+            --primary-dark: #007ea7;
+            --secondary: #003459;
+            --light: #f1f7fa;
+            --white: #ffffff;
+            --text: #333;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body { background-color: var(--light); color: var(--text); }
+
+        /* Header */
+        header {
+            background: var(--white);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        /* Main Container */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 5%;
+        }
+
+        h1 { color: var(--secondary); margin-bottom: 1.5rem; }
+
+        /* Search Card */
+        .search-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .trip-type {
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 20px;
+        }
+
+        .radio-group label {
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+        }
+
+        .input-control {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: 0.3s;
+            background: #fff;
+        }
+
+        .input-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.1);
+        }
+
+        .btn-search {
+            grid-column: 1 / -1;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-search:hover { background: var(--primary-dark); }
+
+        .flight-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid var(--primary);
+            transition: transform 0.2s;
+        }
+
+        .flight-card:hover { transform: translateY(-3px); }
+
+        .flight-info {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            flex-grow: 1;
+        }
+
+        .airline {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80px;
+        }
+        
+        .airline i { font-size: 1.5rem; color: var(--secondary); margin-bottom: 5px; }
+        .airline span { font-size: 0.8rem; font-weight: bold; color: #666; }
+
+        .route {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .time h4 { font-size: 1.2rem; color: var(--secondary); }
+        .time p { font-size: 0.8rem; color: #888; }
+
+        .duration {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #aaa;
+            font-size: 0.8rem;
+        }
+
+        .duration-line {
+            width: 100px;
+            height: 2px;
+            background: #ddd;
+            position: relative;
+            margin: 5px 0;
+        }
+
+        .duration-line::after {
+            content: '✈';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%) rotate(90deg);
+            color: var(--primary);
+            font-size: 14px;
+        }
+
+        .price-action {
+            text-align: right;
+            border-left: 1px solid #eee;
+            padding-left: 30px;
+            min-width: 150px;
+        }
+
+        .price {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+
+        .btn-select {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-select:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .flight-card { flex-direction: column; gap: 20px; text-align: center; }
+            .flight-info { flex-direction: column; gap: 20px; }
+            .price-action { border-left: none; padding-left: 0; width: 100%; border-top: 1px solid #eee; padding-top: 15px; }
+            .route { gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">
+            <i class="fas fa-plane-departure"></i> SKYBLUE
+        </a>
+        <div class="user-profile">
+            <a href="historial.html" style="margin-right: 20px; color: var(--primary); text-decoration: none; font-weight: bold;">
+                <i class="fas fa-history"></i> Historial
+            </a>
+            <span>Usuario</span>
+            <div class="avatar"><i class="fas fa-user"></i></div>
+            <button id="btn-logout" style="margin-left: 15px; background: transparent; border: none; color: #e63946; cursor: pointer; font-size: 1.2rem;" title="Cerrar Sesión">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <h1><i class="fas fa-globe-americas"></i> Explora el mundo con nosotros</h1>
+        
+        <div class="search-card">
+            <div class="trip-type">
+                <div class="radio-group">
+                    <label><input type="radio" name="trip" checked> Ida y Vuelta</label>
+                </div>
+                <div class="radio-group">
+                    <label><input type="radio" name="trip"> Solo Ida</label>
+                </div>
+            </div>
+
+            <div class="search-grid">
+                <div class="input-group">
+                    <label>Origen</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <select id="origen" class="input-control">
+                            <option value="México">México (MEX)</option>
+                            <option value="Madrid">Madrid (MAD)</option>
+                            <option value="Bogotá">Bogotá (BOG)</option>
+                            <option value="Nueva York">Nueva York (JFK)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Destino</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-map-pin"></i>
+                        <select id="destino" class="input-control">
+                            <option value="París">París (CDG)</option>
+                            <option value="Tokio">Tokio (NRT)</option>
+                            <option value="Londres">Londres (LHR)</option>
+                            <option value="Roma">Roma (FCO)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Salida</label>
+                    <div class="input-wrapper">
+                        <i class="far fa-calendar-alt"></i>
+                        <input type="date" id="fecha-salida" class="input-control">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Pasajeros / Clase</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user-friends"></i>
+                        <select id="pasajeros" class="input-control">
+                            <option value="1">1 Adulto, Turista</option>
+                            <option value="2">2 Adultos, Turista</option>
+                            <option value="1b">1 Adulto, Ejecutiva</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-search">Actualizar Búsqueda</button>
+            </div>
+        </div>
+
+        <h3 style="margin-bottom: 1.5rem; color: #555;">Resultados encontrados:</h3>
+
+        <div class="flight-card">
+            <div class="flight-info">
+                <div class="airline">
+                    <i class="fas fa-plane"></i>
+                    <span>SkyAir</span>
+                    <small>SB-102</small>
+                </div>
+                <div class="route">
+                    <div class="time">
+                        <h4>08:00</h4>
+                        <p>MEX</p>
+                    </div>
+                    <div class="duration">
+                        <span>4h 00m</span>
+                        <div class="duration-line"></div>
+                        <span>Directo</span>
+                    </div>
+                    <div class="time">
+                        <h4>12:00</h4>
+                        <p>CDG</p>
+                    </div>
+                </div>
+            </div>
+            <div class="price-action">
+                <span class="price">$450.00</span>
+                <button onclick="guardarVuelo('SB-102', '450.00', 'SkyAir', '08:00 - 12:00')" class="btn-select">
+                    Seleccionar <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="flight-card">
+            <div class="flight-info">
+                <div class="airline">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>BlueJet</span>
+                    <small>SB-205</small>
+                </div>
+                <div class="route">
+                    <div class="time">
+                        <h4>15:30</h4>
+                        <p>MEX</p>
+                    </div>
+                    <div class="duration">
+                        <span>4h 00m</span>
+                        <div class="duration-line"></div>
+                        <span>Directo</span>
+                    </div>
+                    <div class="time">
+                        <h4>19:30</h4>
+                        <p>CDG</p>
+                    </div>
+                </div>
+            </div>
+            <div class="price-action">
+                <span class="price">$380.00</span>
+                <button onclick="guardarVuelo('SB-205', '380.00', 'BlueJet', '15:30 - 19:30')" class="btn-select">
+                    Seleccionar <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="flight-card">
+            <div class="flight-info">
+                <div class="airline">
+                    <i class="fas fa-space-shuttle"></i>
+                    <span>AeroStar</span>
+                    <small>AS-99</small>
+                </div>
+                <div class="route">
+                    <div class="time">
+                        <h4>06:00</h4>
+                        <p>MEX</p>
+                    </div>
+                    <div class="duration">
+                        <span>6h 30m</span>
+                        <div class="duration-line"></div>
+                        <span style="color: orange;">1 Escala</span>
+                    </div>
+                    <div class="time">
+                        <h4>12:30</h4>
+                        <p>CDG</p>
+                    </div>
+                </div>
+            </div>
+            <div class="price-action">
+                <span class="price">$320.00</span>
+                <button onclick="guardarVuelo('AS-99', '320.00', 'AeroStar', '06:00 - 12:30')" class="btn-select">
+                    Seleccionar <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBttyZ5gPUkPcIDWKVx7eUor1E--B24mFI",
+            authDomain: "aerolinea-f2e97.firebaseapp.com",
+            databaseURL: "https://aerolinea-f2e97-default-rtdb.firebaseio.com",
+            projectId: "aerolinea-f2e97",
+            storageBucket: "aerolinea-f2e97.firebasestorage.app",
+            messagingSenderId: "218855130346",
+            appId: "1:218855130346:web:210a9d5fcebbc1df4f4393",
+            measurementId: "G-FFR72S9M1E",
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const auth = firebase.auth();
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const userName = user.displayName || localStorage.getItem('userName') || user.email.split('@')[0];
+                localStorage.setItem('userName', userName);
+                
+                const userProfile = document.querySelector('.user-profile span');
+                if (userProfile) {
+                    userProfile.textContent = userName;
+                }
+
+                const btnLogout = document.getElementById('btn-logout');
+                if (btnLogout) {
+                    btnLogout.addEventListener('click', async () => {
+                        try {
+                            await auth.signOut();
+                            window.location.href = 'login.html';
+                        } catch (error) {
+                            console.error('Error al cerrar sesión:', error);
+                        }
+                    });
+                }
+            } else {
+                console.log("Usuario no autenticado, redirigiendo a login...");
+                window.location.href = 'login.html';
+            }
+        });
+
+        function guardarVuelo(codigo, precio, aerolinea, horario) {
+            localStorage.setItem('vueloSel', codigo);
+            localStorage.setItem('precioSel', precio);
+            localStorage.setItem('aerolineaSel', aerolinea);
+            localStorage.setItem('horarioSel', horario);
+            
+            const origen = document.getElementById('origen');
+            const destino = document.getElementById('destino');
+            const pasajeros = document.getElementById('pasajeros');
+
+            localStorage.setItem('origen', origen.options[origen.selectedIndex].text);
+            localStorage.setItem('destino', destino.options[destino.selectedIndex].text);
+            localStorage.setItem('detallesPasajeros', pasajeros.options[pasajeros.selectedIndex].text);
+
+            window.location.href = 'asientos.html';
+        }
+
+        // Restringir fechas: desde hoy (en 2026) hasta finales de 2030
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateInput = document.getElementById('fecha-salida');
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                const maxDate = "2030-12-31";
+                
+                // Establecer el mínimo como hoy (ya estamos en 2026 según el sistema)
+                dateInput.setAttribute('min', today);
+                dateInput.setAttribute('max', maxDate);
+                
+                // Valor por defecto opcional (hoy)
+                dateInput.value = today;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKYBLUE - Seleccionar Asientos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #00a8e8;
+            --secondary: #003459;
+            --white: #ffffff;
+            --bg: #f1f7fa;
+            /* Colores de Asientos */
+            --seat-first: #f4c542; /* Dorado */
+            --seat-standard: #00a8e8; /* Azul */
+            --seat-eco: #2ecc71; /* Verde */
+            --seat-selected: #e63946; /* Rojo */
+            --seat-occupied: #bdc3c7; /* Gris */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg); color: #333; }
+
+        /* Header (Igual al anterior) */
+        header {
+            background: var(--white);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-decoration: none; }
+
+        main { max-width: 1200px; margin: 0 auto; padding: 2rem; display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; }
+
+        /* --- Estructura del Avión --- */
+        .plane-container {
+            background: var(--white);
+            padding: 40px 20px 20px 20px;
+            border-radius: 100px 100px 30px 30px; /* Forma de nariz de avión */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 320px;
+            position: relative;
+            border: 4px solid #ddd;
+        }
+
+        .cockpit {
+            text-align: center;
+            color: #ccc;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        .cabin-labels {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 45px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #aaa;
+        }
+
+        .fuselage {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* --- Estilos de los Asientos --- */
+        .seat {
+            width: 45px;
+            height: 55px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            background-color: #bdc3c7;
+            cursor: pointer;
+            position: relative;
+            transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Reposabrazos visuales */
+        .seat::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 35px;
+            height: 5px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+
+        /* Clases */
+        .seat.first { background-color: var(--seat-first); }
+        .seat.standard { background-color: var(--seat-standard); }
+        .seat.economy { background-color: var(--seat-eco); }
+        .seat.occupied { background-color: var(--seat-occupied); cursor: not-allowed; }
+        .seat.selected { background-color: var(--seat-selected); transform: scale(1.1); box-shadow: 0 0 10px rgba(230, 57, 70, 0.5); }
+
+        .seat:hover:not(.occupied) { filter: brightness(0.9); transform: translateY(-2px); }
+
+        .aisle { width: 30px; text-align: center; font-size: 0.8rem; color: #ccc; font-weight: 600; }
+
+        /* --- Tarjeta de Resumen (Derecha) --- */
+        .summary-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 350px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .summary-card h3 { color: var(--secondary); margin-bottom: 1.5rem; border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
+
+        .detail-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 0.95rem; }
+        .detail-row span:last-child { font-weight: 600; color: var(--secondary); }
+
+        .total-price { font-size: 1.8rem; color: var(--primary); font-weight: 800; text-align: right; margin: 20px 0; }
+
+        .btn-confirm {
+            background: var(--primary); color: white; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s;
+        }
+        .btn-confirm:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-confirm:hover:not(:disabled) { background: #007ea7; }
+
+        /* Leyenda */
+        .legend { display: flex; gap: 15px; margin-top: 20px; justify-content: center; flex-wrap: wrap; font-size: 0.8rem; }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .dot { width: 15px; height: 15px; border-radius: 50%; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo"><i class="fas fa-plane"></i> SKYBLUE</a>
+    </header>
+
+    <main>
+        <div class="plane-container">
+            <div class="cockpit"><i class="fas fa-plane-up"></i></div>
+            
+            <div class="cabin-labels">
+                <span>A</span>
+                <span>B</span>
+            </div>
+
+            <div class="fuselage" id="fuselage">
+                </div>
+
+            <div class="legend">
+                <div class="legend-item"><div class="dot" style="background: var(--seat-first);"></div> Primera (+$50)</div>
+                <div class="legend-item"><div class="dot" style="background: var(--seat-standard);"></div> Ejecutiva (+$20)</div>
+                <div class="legend-item"><div class="dot" style="background: var(--seat-eco);"></div> Económica</div>
+                <div class="legend-item"><div class="dot" style="background: var(--seat-selected);"></div> Tu selección</div>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <h3>Detalles del Vuelo</h3>
+            
+            <div class="detail-row">
+                <span>Vuelo:</span>
+                <span id="lbl-vuelo">...</span>
+            </div>
+            <div class="detail-row">
+                <span>Ruta:</span>
+                <span id="lbl-ruta">...</span>
+            </div>
+            <div class="detail-row">
+                <span>Aerolínea:</span>
+                <span id="lbl-aerolinea">...</span>
+            </div>
+            
+            <hr style="margin: 15px 0; border: 0; border-top: 1px dashed #ddd;">
+
+            <div class="detail-row">
+                <span>Precio Base:</span>
+                <span id="lbl-precio-base">$0.00</span>
+            </div>
+            <div class="detail-row">
+                <span>Asiento:</span>
+                <span id="lbl-asiento" style="color: var(--primary);">Ninguno</span>
+            </div>
+            <div class="detail-row">
+                <span>Extra Asiento:</span>
+                <span id="lbl-extra">+$0.00</span>
+            </div>
+
+            <div class="total-price" id="lbl-total">$0.00</div>
+
+            <button id="btn-confirmar" class="btn-confirm" disabled onclick="confirmar()">Confirmar Selección</button>
+        </div>
+    </main>
+
+    <!-- Importar Firebase Compatibility SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    
+    <script>
+        // Configuración de Firebase - Inline
+        const firebaseConfig = {
+            apiKey: "AIzaSyBttyZ5gPUkPcIDWKVx7eUor1E--B24mFI",
+            authDomain: "aerolinea-f2e97.firebaseapp.com",
+            projectId: "aerolinea-f2e97",
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const auth = firebase.auth();
+
+        // AUTH GUARD - Redirigir a login si no hay usuario
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+    <script>
+        // 1. Recuperar datos del localStorage (o usar defaults si no hay)
+        const vuelo = localStorage.getItem('vueloSel') || 'SB-000';
+        const precioBase = parseFloat((localStorage.getItem('precioSel') || '0').replace('$',''));
+        const aerolinea = localStorage.getItem('aerolineaSel') || 'SKYBLUE';
+        const origen = localStorage.getItem('origen') || 'Origen';
+        const destino = localStorage.getItem('destino') || 'Destino';
+
+        // Llenar datos iniciales en la tarjeta
+        document.getElementById('lbl-vuelo').innerText = vuelo;
+        document.getElementById('lbl-ruta').innerText = `${origen} ➝ ${destino}`;
+        document.getElementById('lbl-aerolinea').innerText = aerolinea;
+        document.getElementById('lbl-precio-base').innerText = `$${precioBase.toFixed(2)}`;
+        document.getElementById('lbl-total').innerText = `$${precioBase.toFixed(2)}`;
+
+        // 2. Configuración del Avión (Filas y Clases)
+        // class: 'first' (+$50), 'standard' (+$20), 'economy' (+$0)
+        const seatMap = [
+            { row: 1, class: 'first', price: 50 },
+            { row: 2, class: 'first', price: 50 },
+            { row: 3, class: 'standard', price: 20 },
+            { row: 4, class: 'standard', price: 20 },
+            { row: 5, class: 'standard', price: 20 },
+            { row: 6, class: 'economy', price: 0 },
+            { row: 7, class: 'economy', price: 0 },
+            { row: 8, class: 'economy', price: 0 },
+            { row: 9, class: 'economy', price: 0 },
+        ];
+
+        const fuselage = document.getElementById('fuselage');
+        let selectedSeat = null; // Para guardar el asiento seleccionado actual
+
+        // 3. Generar el HTML de los asientos
+        seatMap.forEach(rowData => {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'row';
+
+            // Asiento A
+            const seatA = createSeat(rowData.row, 'A', rowData.class, rowData.price);
+            
+            // Pasillo (Numero de fila)
+            const aisle = document.createElement('div');
+            aisle.className = 'aisle';
+            aisle.innerText = rowData.row;
+
+            // Asiento B
+            const seatB = createSeat(rowData.row, 'B', rowData.class, rowData.price);
+
+            rowDiv.appendChild(seatA);
+            rowDiv.appendChild(aisle);
+            rowDiv.appendChild(seatB);
+
+            fuselage.appendChild(rowDiv);
+        });
+
+        // Función auxiliar para crear el elemento asiento
+        function createSeat(rowNum, colLetter, className, price) {
+            const seatId = `${rowNum}${colLetter}`;
+            const seat = document.createElement('div');
+            seat.className = `seat ${className}`;
+            seat.innerText = colLetter;
+            seat.setAttribute('data-id', seatId);
+            seat.setAttribute('data-price', price);
+            seat.setAttribute('data-class', className); // Para saber el tipo al confirmar
+
+            // Simular asientos ocupados aleatoriamente (Solo visual)
+            if (Math.random() < 0.2) { 
+                seat.classList.add('occupied');
+                seat.title = "Ocupado";
+            } else {
+                seat.onclick = () => selectSeat(seat, seatId, price);
+            }
+            return seat;
+        }
+
+        // 4. Lógica de Selección
+        function selectSeat(seatElement, seatId, seatPrice) {
+            // Quitar selección previa visualmente
+            const prevSelected = document.querySelector('.seat.selected');
+            if (prevSelected) {
+                prevSelected.classList.remove('selected');
+            }
+
+            // Si se hace click en el mismo, se deselecciona
+            if (selectedSeat && selectedSeat.id === seatId) {
+                selectedSeat = null;
+                updateSummary(null, 0);
+                return;
+            }
+
+            // Seleccionar nuevo
+            seatElement.classList.add('selected');
+            selectedSeat = { id: seatId, price: seatPrice, class: seatElement.getAttribute('data-class') };
+            
+            // Actualizar tarjeta derecha
+            updateSummary(seatId, seatPrice);
+        }
+
+        function updateSummary(seatId, extraPrice) {
+            const lblAsiento = document.getElementById('lbl-asiento');
+            const lblExtra = document.getElementById('lbl-extra');
+            const lblTotal = document.getElementById('lbl-total');
+            const btn = document.getElementById('btn-confirmar');
+
+            if (seatId) {
+                lblAsiento.innerText = seatId;
+                lblExtra.innerText = `+$${extraPrice.toFixed(2)}`;
+                const total = precioBase + extraPrice;
+                lblTotal.innerText = `$${total.toFixed(2)}`;
+                btn.disabled = false;
+            } else {
+                lblAsiento.innerText = "Ninguno";
+                lblExtra.innerText = "+$0.00";
+                lblTotal.innerText = `$${precioBase.toFixed(2)}`;
+                btn.disabled = true;
+            }
+        }
+
+        // 5. Guardar y continuar
+        function confirmar() {
+            if (selectedSeat) {
+                localStorage.setItem('asientoFinal', selectedSeat.id);
+                localStorage.setItem('precioExtraAsiento', selectedSeat.price);
+                localStorage.setItem('claseAsiento', selectedSeat.class); // first, standard, economy
+                
+                // Guardamos el total final actualizado
+                const totalFinal = precioBase + selectedSeat.price;
+                localStorage.setItem('precioTotalFinal', totalFinal);
+
+                window.location.href = 'ticket.html';
+            }
+        }
+    </script>
+</body>
+</html>

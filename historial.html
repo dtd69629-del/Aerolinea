@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Vuelos | SKYBLUE Airlines</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00a8e8;
+            --secondary: #003459;
+            --white: #ffffff;
+            --light: #f1f7fa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body { background-color: var(--light); }
+
+        header {
+            background: var(--white);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 5%;
+        }
+
+        h1 {
+            color: var(--secondary);
+            margin-bottom: 2rem;
+        }
+
+        .history-card {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--secondary);
+            color: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #999;
+            padding: 3rem;
+        }
+
+        .loading {
+            text-align: center;
+            color: var(--primary);
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html" class="logo">
+        <i class="fas fa-plane-departure"></i> SKYBLUE
+    </a>
+    <div class="user-profile">
+        <span id="userName">Usuario</span>
+        <div class="avatar"><i class="fas fa-user"></i></div>
+        <button id="btn-logout" style="margin-left: 15px; background: transparent; border: none; color: #e63946; cursor: pointer; font-size: 1.2rem;" title="Cerrar Sesión">
+            <i class="fas fa-sign-out-alt"></i>
+        </button>
+    </div>
+</header>
+
+<main>
+    <h1><i class="fas fa-history"></i> Mi Historial de Vuelos</h1>
+    
+    <div class="history-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Pasajero</th>
+                    <th>Origen</th>
+                    <th>Destino</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Asiento</th>
+                    <th>Clase</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody id="historyTable">
+                <tr>
+                    <td colspan="8" class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Cargando historial...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<script type="module">
+import { auth } from './firebase-config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        // Mostrar nombre del usuario
+        const userName = user.displayName || localStorage.getItem('userName') || user.email.split('@')[0];
+        document.getElementById('userName').textContent = userName;
+        
+        // Configurar botón de logout
+        const btnLogout = document.getElementById('btn-logout');
+        if (btnLogout) {
+            btnLogout.addEventListener('click', async () => {
+                try {
+                    await signOut(auth);
+                    window.location.href = 'login.html';
+                } catch (error) {
+                    console.error('Error al cerrar sesión:', error);
+                }
+            });
+        }
+        
+        // Cargar historial
+        loadHistory(user.uid);
+    } else {
+        window.location.href = 'login.html';
+    }
+});
+
+function loadHistory(uid) {
+    fetch(`http://localhost:3000/tickets/${uid}`)
+        .then(res => res.json())
+        .then(data => renderHistory(data))
+        .catch(err => {
+            console.error(err);
+            document.getElementById("historyTable").innerHTML = 
+                '<tr><td colspan="8" class="no-data">Error al cargar historial</td></tr>';
+        });
+}
+
+function renderHistory(tickets) {
+    const table = document.getElementById("historyTable");
+    
+    if (tickets.length === 0) {
+        table.innerHTML = '<tr><td colspan="8" class="no-data">No tienes vuelos registrados aún</td></tr>';
+        return;
+    }
+
+    table.innerHTML = tickets.map(t => `
+        <tr>
+            <td>${t.passengerName}</td>
+            <td>${t.origin}</td>
+            <td>${t.destination}</td>
+            <td>${t.date}</td>
+            <td>${t.time}</td>
+            <td>${t.seat}</td>
+            <td>${t.class}</td>
+            <td>$${t.price}</td>
+        </tr>
+    `).join('');
+}
+</script>
+
+</body>
+</html>
