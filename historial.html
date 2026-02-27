@@ -176,7 +176,7 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 function loadHistory(uid) {
-    fetch(`http://localhost:3000/tickets/${uid}`)
+    fetch(`https://backend-icxt.onrender.com/tickets/${uid}`)
         .then(res => res.json())
         .then(data => renderHistory(data))
         .catch(err => {
